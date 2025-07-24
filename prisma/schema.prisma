@@ -9,6 +9,7 @@ generator client {
   output   = "../generated/prisma"
 }
 
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -18,6 +19,7 @@ model Employee{
   id Int @id @default(autoincrement())
   name String
   email String @unique
+  password String
   role String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -27,4 +29,14 @@ enum Role{
   INTERN
   ENGINEER
   ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

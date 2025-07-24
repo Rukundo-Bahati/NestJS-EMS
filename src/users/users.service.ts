@@ -1,89 +1,44 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class UsersService {
- 
-  private users = [
-    {
-        "id": 1,
-        "name": "Leanne Graham",
-        "email": "Sincere@april.biz",
-        "role": "INTERN",
-    },
-    {
-        "id": 2,
-        "name": "Ervin Howell",
-        "email": "Shanna@melissa.tv",
-        "role": "INTERN",
-    },
-    {
-        "id": 3,
-        "name": "Clementine Bauch",
-        "email": "Nathan@yesenia.net",
-        "role": "ENGINEER",
-    },
-    {
-        "id": 4,
-        "name": "Patricia Lebsack",
-        "email": "Julianne.OConner@kory.org",
-        "role": "ENGINEER",
-    },
-    {
-        "id": 5,
-        "name": "Chelsey Dietrich",
-        "email": "Lucio_Hettinger@annie.ca",
-        "role": "ADMIN",
-    }
-]
+  constructor(private readonly databaseService: DatabaseService) {}
 
-
-  create(createUserDto: CreateUserDto) {
-       const userByHightstId = [...this.users].sort((a,b) => b.id - a.id)[0].id + 1;
-       const newUser = {
-        id: userByHightstId,
-        ...createUserDto
-       }
-       this.users.push(newUser);
-       return newUser;
+  // User management methods (not for authentication)
+  async create(createUserDto: CreateUserDto) {
+    return this.databaseService.user.create({ data: createUserDto });
   }
 
-  findAll(role: "INTERN" | "ENGINEER" | "ADMIN") {
-   if(role){
-    const rolesArray=  this.users.filter((user) => user.role === role);
-    if(rolesArray.length === 0){
+  async findAll(role?: "INTERN" | "ENGINEER" | "ADMIN") {
+    if (role) {
+      const users = await this.databaseService.user.findMany({ where: { role } });
+      if (users.length === 0) {
         throw new NotFoundException(`No users found with role ${role}`);
+      }
+      return users;
     }
-    return rolesArray;
-   }
-   return this.users;
+    return this.databaseService.user.findMany();
   }
 
-  findOne(id: number) {
-   const user = this.users.find((user) => user.id === id);
-   if(!user){
-    throw new NotFoundException(`User with id ${id} not found`);
-   }
-   return user;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-   this.users = this.users.map((user) => {
-    if(user.id === id){
-        return {
-            ...user,
-            ...updateUserDto
-        }
+  async findOne(id: number) {
+    const user = await this.databaseService.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
-   })
-   return this.users.find((user) => user.id === id);
   }
 
-  remove(id: number) {
-    const removedUser = this.findOne(id);
-    this.users = this.users.filter((user) => user.id !== id);
-    return removedUser;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    return this.databaseService.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+  }
+
+  async remove(id: number) {
+    return this.databaseService.user.delete({ where: { id } });
   }
 }

@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Ip } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Ip, UseGuards } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { Prisma, Role } from 'generated/prisma';
 import { Throttle, SkipThrottle } from '@nestjs/throttler'
 import { MyLoggerService } from 'src/my-logger/my-logger.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @SkipThrottle()
 @Controller('employees')
@@ -11,6 +14,8 @@ export class EmployeesController {
   private readonly logger = new MyLoggerService(EmployeesController.name)
   
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   create(@Body() createEmployeeDto: Prisma.EmployeeCreateInput) {
     return this.employeesService.create(createEmployeeDto);
   }
@@ -29,11 +34,15 @@ export class EmployeesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   update(@Param('id') id: string, @Body() updateEmployeeDto: Prisma.EmployeeUpdateInput) {
     return this.employeesService.update(+id, updateEmployeeDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   remove(@Param('id') id: string) {
     return this.employeesService.remove(+id);
   }

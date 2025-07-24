@@ -11,4 +11,8 @@ export class CreateUserDto {
 
     @IsEnum(["INTERN", "ENGINEER", "ADMIN"])
     role: "INTERN" | "ENGINEER" | "ADMIN";
+
+    @IsString()
+    @IsNotEmpty()
+    password: string;
 }
