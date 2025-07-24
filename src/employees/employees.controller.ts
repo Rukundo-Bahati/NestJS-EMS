@@ -9,10 +9,10 @@ import { Roles } from '../auth/roles.decorator';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('employees')
-@ApiBearerAuth()
-@SkipThrottle()
+@ApiBearerAuth() //protecting all endpoints (swagger)
+@SkipThrottle() // skipping rate-limits
 @Controller('employees')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard) // Role-based Access
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) { }
   private readonly logger = new MyLoggerService(EmployeesController.name)
