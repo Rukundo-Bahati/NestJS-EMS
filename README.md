@@ -1,6 +1,12 @@
 # 🧑‍💼 Employee Management System API - NestJS
 
-A full-featured backend application built with **NestJS** and **Prisma** for managing employees, with authentication and role-based authorization.
+A full-featured **NestJS REST API** for employee management. This project includes:
+- 🌐 Complete RESTful API for employee CRUD
+- 🚫 Rate-limiting on endpoints
+- 📋 Custom logging of requests
+- 🔐 Employee-based authentication and role-based authorization
+
+Built with **NestJS** and **Prisma** for robust, secure, and scalable employee management.
 
 ---
 
